@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <regex>
 #include <my_config.h>
 #include <m_ctype.h>
 #include <mysql/plugin_ftparser.h>
@@ -127,6 +128,10 @@ static int sqljieba_parse(MYSQL_FTPARSER_PARAM *param)
 
   // Convert C const char* to C++ string
   std::string doc(param->doc, param->length);
+  // Only keep letters, numbers, and other common human languages
+  // All other characters are replaced by spaces
+  std::regex punc("[^\u2e80-\u3000\u3021-\ufe4fa-zA-Z0-9]");
+  doc = std::regex_replace(doc, punc, " ");
   // Segmented words
   // cpjieba::Word contains the offset information
   std::vector<Word> words;
